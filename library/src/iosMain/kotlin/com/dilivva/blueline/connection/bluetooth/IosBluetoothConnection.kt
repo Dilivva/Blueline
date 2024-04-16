@@ -39,7 +39,7 @@ import platform.Foundation.NSData
 import platform.Foundation.create
 import kotlin.time.Duration.Companion.seconds
 
-internal object IosBluetoothConnection: BluetoothConnection {
+internal object IosBluetoothConnection: BlueLine {
 
     private val printerHelper = PrinterHelper(
         onNext = { data ->

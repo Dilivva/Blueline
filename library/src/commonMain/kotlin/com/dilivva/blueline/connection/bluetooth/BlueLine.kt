@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.StateFlow
  * printer discovery, and printing functionalities.
  * It abstracts away platform-specific details and offers a consistent API for various operations.
  */
-interface BluetoothConnection {
+interface BlueLine {
 
     /**
      * Provides a live stream of updates on the current connection state with the Bluetooth printer.

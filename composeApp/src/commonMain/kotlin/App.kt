@@ -34,8 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.dilivva.blueline.builder.Config
 import com.dilivva.blueline.builder.PrintData
 import com.dilivva.blueline.builder.buildPrintData
-import com.dilivva.blueline.connection.bluetooth.BluetoothConnection
-import com.dilivva.blueline.connection.bluetooth.Connection
+import com.dilivva.blueline.connection.bluetooth.BlueLine
 import com.dilivva.blueline.connection.bluetooth.ConnectionError
 import com.dilivva.blueline.connection.bluetooth.ConnectionState
 import escposprinter.composeapp.generated.resources.Res
@@ -53,7 +52,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun App() {
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
-        val bluetoothConnection = remember { Connection() }
+        val bluetoothConnection = remember { BlueLine() }
         val connectionState by bluetoothConnection.connectionState().collectAsState()
         val scope = rememberCoroutineScope()
         var message  by remember { mutableStateOf("") }
@@ -121,7 +120,7 @@ fun ShowDialog(
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ConnectionItem(
-    connection: BluetoothConnection,
+    connection: BlueLine,
     connectionState: ConnectionState,
     scope: CoroutineScope
 ){

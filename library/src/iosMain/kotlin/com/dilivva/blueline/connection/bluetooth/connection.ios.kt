@@ -24,4 +24,4 @@ package com.dilivva.blueline.connection.bluetooth
 
 
 @Suppress("FunctionName", "unused")
-actual fun Connection(): BluetoothConnection = IosBluetoothConnection
+actual fun BlueLine(): BlueLine = IosBluetoothConnection

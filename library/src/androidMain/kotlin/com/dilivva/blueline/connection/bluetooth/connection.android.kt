@@ -25,4 +25,4 @@ package com.dilivva.blueline.connection.bluetooth
 
 
 @Suppress("FunctionName", "unused")
-actual fun Connection(): BluetoothConnection = AndroidBluetoothConnection
+actual fun BlueLine(): BlueLine = AndroidBluetoothConnection

@@ -1,6 +1,10 @@
-## Blueline: Kotlin Multiplatform Bluetooth Printing
+![badge][badge-android]
+![badge][badge-ios]
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.dilivva/blueline/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dilivva/blueline)
 
-**Blueline** is a Kotlin multiplatform library that simplifies Bluetooth printer integration in your applications. It provides a platform-agnostic API for common printer operations across various platforms (Android, iOS, etc.).
+# BlueLine
+
+**BlueLine** is a Kotlin multiplatform library that simplifies Bluetooth printer integration in your applications. It provides a platform-agnostic API for common printer operations across mobile platforms (Android, iOS).
 
 **Key Features:**
 
@@ -8,56 +12,67 @@
 * **Rich Text Formatting:** Enhance your printouts with options for alignment, font, style, and color.
 * **Seamless Image Printing:** Print images directly from your application.
 * **Custom Command Support:** Send any printer-specific commands for advanced control.
-* **Write Once, Run Everywhere:** Develop your printing logic once and deploy it across platforms with minimal adjustments.
-
-**Benefits:**
-
-* **Reduced Code Complexity:** Blueline's unified API simplifies printer integration, saving you development time.
-* **Improved Maintainability:** Manage your printing logic in a single codebase for better maintainability.
-* **Enhanced User Experience:** Offer rich printing capabilities to your users on various platforms.
-
+* **Kotlin multiplatform for mobile:** Develop your app targeting Android and iOS.
 
 ## Getting Started
 
-Blueline is easy to integrate into your Kotlin multiplatform project. Here's a quick guide:
+BlueLine is easy to integrate into your Kotlin multiplatform project. Here's a quick guide:
 
-1. **Add Blueline to your dependencies:**
+1. **Add BlueLine to your dependencies:**
 
    ```kotlin
-   // In your build.gradle.kts file
+   // In your root build.gradle.kts file
    repositories {
        mavenCentral()
    }
-   
-   dependencies {
-       val bluelineVersion = "1.0.0" // Replace with the latest version
-       commonMainImplementation("com.example.blueline:blueline:$bluelineVersion")
+   kotlin{
+       sourceSets {
+         commonMain.dependencies{
+            implementation("com.dilivva:blueline:${bluelineVersion}")
+        } 
+    }
    }
    ```
 
 2. **Explore the API:**
-
-   Refer to the Blueline documentation for detailed information about available functionalities and usage examples. (**Note:** Replace the placeholder link with your actual documentation location)
 
 ## Usage Example
 
 Here's a basic example demonstrating how to print some formatted text and an image:
 
 ```kotlin
-import com.example.blueline.*
+import com.dilivva.blueline.*
 
-fun main() {
-    val printer = connectToPrinter() // Replace with Blueline's connection logic
-
-    printer.print(
-        styledText(
-            "This is a formatted text!",
-            alignment = Config.Alignment.CENTER,
-            font = Config.Font.LARGE,
-            style = Config.Style.BOLD
-        ) + "\n" +
-                appendImage(getImageFromResource(R.drawable.my_image))
-    )
+fun main() { 
+    val blueLine = BlueLine()
+    //Monitor Connection state
+    val connectionState = bluetoothConnection.connectionState() //StateFlow<ConnectionState>
+    //Scan for printers
+    blueLine.scanForPrinters()
+    //Connect
+    blueLine.connect()
+   
+    //Build print data
+    val (printData, imagePreview) = buildPrintData {
+        appendImage {
+            imageBytes = bytes
+        }
+        appendText { 
+            styledText(data = "Send24", alignment = Config.Alignment.CENTER, font = Config.Font.LARGE_2, style = Config.Style.BOLD)
+            textNewLine()
+            styledText(data = "================================", alignment =  Config.Alignment.CENTER, style = Config.Style.BOLD)
+            textNewLine()
+            text("Name: Bob Oscar")
+            textNewLine(2)
+            text("Phone: +111111111")
+            textNewLine(2)
+            styledText(data = "Variant:", font = Config.Font.NORMAL, style = Config.Style.BOLD)
+            text("HUB_TO_HUB")
+        }
+    }
+    
+    //print
+    blueLine.print(printData)
 }
 ```
 
@@ -67,12 +82,10 @@ This example demonstrates:
 * Printing formatted text with alignment, font, and style options.
 * Printing an image from a resource.
 
-**Remember:** Replace the placeholder functions with actual Blueline functions for connecting, retrieving images, etc. Refer to the full documentation for details.
-
 ## Contributing
 
-We welcome contributions to Blueline! Please see the CONTRIBUTING.md file for guidelines on how to contribute.
+We welcome contributions to Blueline!
 
 ## License
 
-Blueline is licensed under the MIT License 2.0. See the LICENSE file for details.
+Blueline is licensed under the MIT License. See the LICENSE file for details.

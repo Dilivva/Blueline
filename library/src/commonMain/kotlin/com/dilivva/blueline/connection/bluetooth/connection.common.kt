@@ -25,7 +25,6 @@
 package com.dilivva.blueline.connection.bluetooth
 
 /**
- * This function is for obtaining a BluetoothConnection.
+ * This function is for obtaining an Instance of BlueLine.
  */
-@Suppress("FunctionName")
-expect fun Connection(): BluetoothConnection
+expect fun BlueLine(): BlueLine
