@@ -9,7 +9,7 @@ plugins {
 kotlin {
     applyDefaultHierarchyTemplate()
     androidTarget {
-        publishLibraryVariants("release")
+        publishAllLibraryVariants()
         compilations.all {
             kotlinOptions {
                 jvmTarget = "1.8"
@@ -22,7 +22,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
-            baseName = "Blueline"
+            baseName = "BlueLine"
         }
     }
 

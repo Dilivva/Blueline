@@ -1,5 +1,6 @@
-![badge][badge-android]
-![badge][badge-ios]
+![badge](https://camo.githubusercontent.com/8ce65a3be14c94be47bceb832f55e376253dde249232136976baacb38b85438c/687474703a2f2f696d672e736869656c64732e696f2f62616467652f706c6174666f726d2d616e64726f69642d3645444238442e7376673f7374796c653d666c6174)
+![badge](https://camo.githubusercontent.com/549a60a8c72c6b9ad3229b3d45dbf8cbd0f2bc9493b95463b2004b3546a36923/687474703a2f2f696d672e736869656c64732e696f2f62616467652f706c6174666f726d2d696f732d4344434443442e7376673f7374796c653d666c6174)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/Dilivva/Blueline)](https://github.com/Dilivva/Blueline/releases)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.dilivva/blueline/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dilivva/blueline)
 
 # BlueLine
