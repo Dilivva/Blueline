@@ -1,9 +1,11 @@
 import com.vanniktech.maven.publish.SonatypeHost
 
+//import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    id("com.vanniktech.maven.publish").version("0.25.3")
+    alias(libs.plugins.publish)
 }
 
 kotlin {
@@ -51,9 +53,9 @@ android {
 @Suppress("UnstableApiUsage")
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.S01, true)
-    val versionTxt = "0.0.1"
+    val versionTxt = "0.0.2"
     val isDev = findProperty("env")?.equals("dev") ?: false
-    val version = if (isDev) versionTxt.plus("-SNAPSHOT") else versionTxt
+    val version = if (isDev) "0.0.1-SNAPSHOT" else versionTxt
 
 
     coordinates("com.dilivva", "blueline", version)
