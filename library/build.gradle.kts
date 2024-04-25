@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 //import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
@@ -50,7 +52,7 @@ android {
 }
 @Suppress("UnstableApiUsage")
 mavenPublishing {
-    //publishToMavenCentral(SonatypeHost.S01, true)
+    publishToMavenCentral(SonatypeHost.S01, true)
     val versionTxt = "0.0.2"
     val isDev = findProperty("env")?.equals("dev") ?: false
     val version = if (isDev) "0.0.1-SNAPSHOT" else versionTxt
