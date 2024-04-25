@@ -142,6 +142,7 @@ internal object IosBluetoothConnection: BlueLine {
 
     override fun print(data: ByteArray) {
         printerHelper.begin(data)
+        stateFlow.update { it.copy(isPrinting = true) }
     }
 
     @Suppress("OPT_IN_USAGE")
