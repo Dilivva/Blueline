@@ -54,6 +54,7 @@ fun App() {
         val scope = rememberCoroutineScope()
         var message  by remember { mutableStateOf("") }
         var showDialog  by remember { mutableStateOf(false) }
+        var scanCount by remember { mutableStateOf(0) }
 
         LaunchedEffect(Unit){
             if (!showContent) showContent = true
@@ -69,6 +70,23 @@ fun App() {
                 ConnectionError.BLUETOOTH_PRINTER_DEVICE_NOT_FOUND -> "No printer found"
             }
             showDialog = message.isNotEmpty()
+        }
+        LaunchedEffect(connectionState){
+            if (connectionState.isBluetoothReady && !connectionState.discoveredPrinter && !connectionState.isScanning && scanCount == 0){
+                scanCount++
+                scope.launch {
+                    bluetoothConnection.scanForPrinters()
+                }
+                //println("Scanning")
+            }
+            if (connectionState.discoveredPrinter && !connectionState.isConnected){
+                bluetoothConnection.connect()
+                println("Connecting")
+            }
+            if (connectionState.isPrinting){
+                //printingStarted = true
+                println("Printing")
+            }
         }
 
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {

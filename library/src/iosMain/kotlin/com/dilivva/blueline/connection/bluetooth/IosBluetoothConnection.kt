@@ -109,7 +109,7 @@ internal object IosBluetoothConnection: BlueLine {
         }
         stateFlow.update { it.copy(bluetoothConnectionError = null, isScanning = true) }
         centralManager.scanForPeripheralsWithServices(serviceUUIDs = listOf(delegate.UUID), options = null)
-        delay(10.seconds)
+        delay(5.seconds)
         if (!stateFlow.value.discoveredPrinter){
             stateFlow.update { it.copy(bluetoothConnectionError = ConnectionError.BLUETOOTH_PRINTER_DEVICE_NOT_FOUND, isScanning = false) }
         }

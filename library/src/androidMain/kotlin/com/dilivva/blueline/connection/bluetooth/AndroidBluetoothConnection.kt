@@ -55,6 +55,7 @@ internal object AndroidBluetoothConnection: BlueLine {
     //Service UUID is 16bit e.g FF00, to scan we'll have to use 0000xxxx-0000-1000-8000-00805F9B34FB
     private val printerUUID = ParcelUuid.fromString("000018F0-0000-1000-8000-00805F9B34FB")
     private val characterUuid = UUID.fromString("00002AF1-0000-1000-8000-00805F9B34FB")
+    private val bondedUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
 
     private var bluetoothDevice: BluetoothDevice? = null
     private val bluetoothLeScanner = bluetoothAdapter?.bluetoothLeScanner
@@ -170,7 +171,7 @@ internal object AndroidBluetoothConnection: BlueLine {
             return
         }
         val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
-        val pairedPrinter = pairedDevices?.find { it.uuids.contains(printerUUID) }
+        val pairedPrinter = pairedDevices?.find { it.isPrinter() }
         if (pairedPrinter != null){
             bluetoothDevice = pairedPrinter
             stateFlow.update { state -> state.copy(deviceName = pairedPrinter.name.orEmpty(), discoveredPrinter = true) }
@@ -213,16 +214,24 @@ internal object AndroidBluetoothConnection: BlueLine {
             stateFlow.update { it.copy(isScanning = false) }
         }
         stateFlow.update { it.copy(bluetoothConnectionError = null, isScanning = true) }
+
         bluetoothLeScanner?.startScan(
             listOf(ScanFilter.Builder().setServiceUuid(printerUUID).build()),
             ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED).build(),
             scanCallback
         )
-        delay(10.seconds)
+
+        delay(5.seconds)
         if (!stateFlow.value.discoveredPrinter){
             stateFlow.update { it.copy(bluetoothConnectionError = ConnectionError.BLUETOOTH_PRINTER_DEVICE_NOT_FOUND, isScanning = false) }
         }
+
         bluetoothLeScanner?.stopScan(scanCallback)
+
+    }
+
+    private fun BluetoothDevice.isPrinter(): Boolean{
+        return uuids.any { it.uuid == bondedUUID }
     }
 
 }
