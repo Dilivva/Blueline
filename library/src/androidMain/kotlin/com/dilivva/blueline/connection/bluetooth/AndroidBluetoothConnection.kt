@@ -134,6 +134,7 @@ internal object AndroidBluetoothConnection: BlueLine {
         }
 
 
+
     }
 
 
@@ -187,8 +188,8 @@ internal object AndroidBluetoothConnection: BlueLine {
             return
         }
         if (bluetoothGatt != null){
-            bluetoothGatt?.connect()
-            return
+            val isReconnect = bluetoothGatt?.connect()
+            if (isReconnect == true) return
         }
         bluetoothGatt = bluetoothDevice?.connectGatt(applicationContext, false, gattCallback, BluetoothDevice.TRANSPORT_LE)
     }

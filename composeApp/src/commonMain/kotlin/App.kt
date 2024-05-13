@@ -72,21 +72,21 @@ fun App() {
             showDialog = message.isNotEmpty()
         }
         LaunchedEffect(connectionState){
-            if (connectionState.isBluetoothReady && !connectionState.discoveredPrinter && !connectionState.isScanning && scanCount == 0){
-                scanCount++
-                scope.launch {
-                    bluetoothConnection.scanForPrinters()
-                }
-                //println("Scanning")
-            }
-            if (connectionState.discoveredPrinter && !connectionState.isConnected){
-                bluetoothConnection.connect()
-                println("Connecting")
-            }
-            if (connectionState.isPrinting){
-                //printingStarted = true
-                println("Printing")
-            }
+//            if (connectionState.isBluetoothReady && !connectionState.discoveredPrinter && !connectionState.isScanning && scanCount == 0){
+//                scanCount++
+//                scope.launch {
+//                    bluetoothConnection.scanForPrinters()
+//                }
+//                //println("Scanning")
+//            }
+//            if (connectionState.discoveredPrinter && !connectionState.isConnected){
+//                bluetoothConnection.connect()
+//                println("Connecting")
+//            }
+//            if (connectionState.isPrinting){
+//                //printingStarted = true
+//                println("Printing")
+//            }
         }
 
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
