@@ -47,7 +47,7 @@ import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 @SuppressLint("MissingPermission")
-internal object AndroidBluetoothConnection: BlueLine {
+internal class AndroidBluetoothConnection: BlueLine {
 
     private val stateFlow = MutableStateFlow(ConnectionState())
     private val bluetoothManager: BluetoothManager = applicationContext.getSystemService(BluetoothManager::class.java)
