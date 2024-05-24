@@ -58,7 +58,7 @@ internal class AndroidBluetoothConnection: BlueLine {
     private val bondedUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
 
     private var bluetoothDevice: BluetoothDevice? = null
-    private val bluetoothLeScanner = bluetoothAdapter?.bluetoothLeScanner
+    private var bluetoothLeScanner = bluetoothAdapter?.bluetoothLeScanner
     private var bluetoothGatt: BluetoothGatt? = null
     private var characteristic: BluetoothGattCharacteristic? = null
 
@@ -213,6 +213,9 @@ internal class AndroidBluetoothConnection: BlueLine {
         if (stateFlow.value.isScanning){
             bluetoothLeScanner?.stopScan(scanCallback)
             stateFlow.update { it.copy(isScanning = false) }
+        }
+        if (bluetoothLeScanner == null){
+            bluetoothLeScanner = bluetoothAdapter?.bluetoothLeScanner
         }
         stateFlow.update { it.copy(bluetoothConnectionError = null, isScanning = true) }
 
