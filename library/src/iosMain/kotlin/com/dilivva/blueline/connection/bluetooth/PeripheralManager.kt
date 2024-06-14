@@ -42,4 +42,6 @@ internal class PeripheralManager(
         onWrite(error == null)
     }
 
+
+
 }

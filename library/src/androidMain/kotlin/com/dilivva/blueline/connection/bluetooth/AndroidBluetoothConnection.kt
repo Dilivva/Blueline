@@ -25,6 +25,7 @@ package com.dilivva.blueline.connection.bluetooth
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
@@ -55,7 +56,6 @@ internal class AndroidBluetoothConnection: BlueLine {
     //Service UUID is 16bit e.g FF00, to scan we'll have to use 0000xxxx-0000-1000-8000-00805F9B34FB
     private val printerUUID = ParcelUuid.fromString("000018F0-0000-1000-8000-00805F9B34FB")
     private val characterUuid = UUID.fromString("00002AF1-0000-1000-8000-00805F9B34FB")
-    private val bondedUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
 
     private var bluetoothDevice: BluetoothDevice? = null
     private var bluetoothLeScanner = bluetoothAdapter?.bluetoothLeScanner
@@ -97,10 +97,16 @@ internal class AndroidBluetoothConnection: BlueLine {
 
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                stateFlow.update { state -> state.copy(isConnected = true) }
+                stateFlow.update { state -> state.copy(isConnected = true, isConnecting = false) }
                 gatt?.discoverServices()
             }else{
-                stateFlow.update { state -> state.copy(isConnected = false) }
+                stateFlow.update {
+                    it.copy(
+                        isConnecting = false,
+                        isConnected = false,
+                        bluetoothConnectionError = ConnectionError.BLUETOOTH_PRINTER_DEVICE_NOT_FOUND
+                    )
+                }
             }
         }
 
@@ -183,6 +189,7 @@ internal class AndroidBluetoothConnection: BlueLine {
     }
 
     override fun connect() {
+        stateFlow.update { it.copy(isConnecting = true) }
         val state = stateFlow.value
         if (!state.isBluetoothReady || state.isConnected){
             return
@@ -235,7 +242,7 @@ internal class AndroidBluetoothConnection: BlueLine {
     }
 
     private fun BluetoothDevice.isPrinter(): Boolean{
-        return uuids.any { it.uuid == bondedUUID }
+        return bluetoothClass.majorDeviceClass == BluetoothClass.Device.Major.IMAGING && bluetoothClass.deviceClass == 1664
     }
 
 }
