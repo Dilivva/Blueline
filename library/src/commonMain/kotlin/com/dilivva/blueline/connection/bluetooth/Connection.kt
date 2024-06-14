@@ -73,5 +73,6 @@ data class ConnectionState(
     val isBluetoothReady: Boolean = false,
     val bluetoothConnectionError: ConnectionError? = null,
     val isPrinting: Boolean = false,
-    val isScanning: Boolean = false
+    val isScanning: Boolean = false,
+    val isConnecting:Boolean = false
 )

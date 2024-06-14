@@ -1,5 +1,4 @@
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,7 +7,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
@@ -35,7 +36,6 @@ import com.dilivva.blueline.builder.buildPrintData
 import com.dilivva.blueline.connection.bluetooth.BlueLine
 import com.dilivva.blueline.connection.bluetooth.ConnectionError
 import com.dilivva.blueline.connection.bluetooth.ConnectionState
-import escposprinter.composeapp.generated.resources.Res
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -143,18 +143,18 @@ fun ConnectionItem(
     var image by remember { mutableStateOf<ImageBitmap?>(null) }
     var imageBytes by remember { mutableStateOf(byteArrayOf()) }
 
-    LaunchedEffect(Unit){
-        val bytes = Res.readBytes("drawable/label.png")
-        imageBytes = bytes
-        image = getPlatform().toImage(bytes)
-    }
+//    LaunchedEffect(Unit){
+//        val bytes = Res.readBytes("drawable/label.png")
+//        imageBytes = bytes
+//        image = getPlatform().toImage(bytes)
+//    }
 
    Box(
        modifier = Modifier.fillMaxWidth().padding(20.dp)
        .background(Color.LightGray.copy(alpha = 0.2f), RoundedCornerShape(15.dp))
        .padding(8.dp)
    ){
-       Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(15.dp)){
+       Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState(), enabled = true), verticalArrangement = Arrangement.spacedBy(15.dp)){
            Text(
                text = connectionState.deviceName,
                fontSize = 14.sp,
@@ -190,6 +190,11 @@ fun ConnectionItem(
                enabled = !connectionState.isConnected && connectionState.discoveredPrinter
            ){
                Text("Connect")
+               if (connectionState.isConnecting) {
+                   CircularProgressIndicator(
+                       color = Color.White
+                   )
+               }
            }
 
            Button(
@@ -223,14 +228,13 @@ fun ConnectionItem(
                }
            }
 
-
-           image?.let {
-               Image(
-                   bitmap = it,
-                   contentDescription = null,
-                   modifier = Modifier.fillMaxWidth()
-               )
-           }
+//           image?.let {
+//               Image(
+//                   bitmap = it,
+//                   contentDescription = null,
+//                   modifier = Modifier.fillMaxWidth()
+//               )
+//           }
        }
    }
 }
