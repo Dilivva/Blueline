@@ -63,7 +63,7 @@ interface BlueLine {
      *  * Call [init] before scanning to ensure Bluetooth is ready.
      *  * This method prioritizes the first discovered printer and might ignore others. Consider revising this behavior if you need to select a specific printer.
      *
-     * @throws CancellationException if the coroutine is cancelled during the scan.
+     * @throws [CancellationException] if the coroutine is cancelled during the scan.
      */
     suspend fun scanForPrinters()
 

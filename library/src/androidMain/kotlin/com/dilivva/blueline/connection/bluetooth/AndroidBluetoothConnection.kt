@@ -97,7 +97,7 @@ internal class AndroidBluetoothConnection: BlueLine {
 
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                stateFlow.update { state -> state.copy(isConnected = true, isConnecting = false) }
+                stateFlow.update { state -> state.copy(isConnected = true, isConnecting = false, bluetoothConnectionError = null) }
                 gatt?.discoverServices()
             }else{
                 stateFlow.update {
@@ -189,7 +189,7 @@ internal class AndroidBluetoothConnection: BlueLine {
     }
 
     override fun connect() {
-        stateFlow.update { it.copy(isConnecting = true) }
+        stateFlow.update { it.copy(isConnecting = true, bluetoothConnectionError = null) }
         val state = stateFlow.value
         if (!state.isBluetoothReady || state.isConnected){
             return
