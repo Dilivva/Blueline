@@ -64,6 +64,7 @@ enum class ConnectionError {
  * @property bluetoothConnectionError An optional `ConnectionError` object containing details about any errors encountered during Bluetooth connection attempts.
  * @property isPrinting Indicates if a print job is currently being sent to the printer.
  * @property isScanning Indicates if the system is actively searching for printers (relevant for discovery phase).
+ * @property isConnecting Indicates if the system is attempting to connect to the printer
  */
 data class ConnectionState(
     val deviceName: String = "Searching",

@@ -59,7 +59,7 @@ internal object IosBluetoothConnection: BlueLine {
             stateFlow.update { state -> state.copy(deviceName = device.name.orEmpty(), discoveredPrinter = true, isScanning = false) }
         },
         onConnection = {
-            stateFlow.update { state -> state.copy(isConnected = it, isConnecting = false) }
+            stateFlow.update { state -> state.copy(isConnected = it, isConnecting = false, bluetoothConnectionError = if (it) null else ConnectionError.BLUETOOTH_PRINTER_DEVICE_NOT_FOUND) }
         },
         onBluetoothReady = {
             stateFlow.update { state ->
@@ -71,7 +71,7 @@ internal object IosBluetoothConnection: BlueLine {
     private val peripheralManager = PeripheralManager(
         onCharacter = { character ->
             characteristic = character
-            stateFlow.update { state -> state.copy(canPrint = true, isConnecting = false) }
+            stateFlow.update { state -> state.copy(canPrint = true) }
             val mtu = peripheral?.maximumWriteValueLengthForType(CBCharacteristicWriteWithResponse)?.toInt()
             printerHelper.mtu = mtu ?: 20
         },
@@ -121,7 +121,7 @@ internal object IosBluetoothConnection: BlueLine {
     }
 
     override fun connect() {
-        stateFlow.update { it.copy(isConnecting = true) }
+        stateFlow.update { it.copy(isConnecting = true, bluetoothConnectionError = null) }
         val state = stateFlow.value
         if (!state.isBluetoothReady || state.isConnected){
             return

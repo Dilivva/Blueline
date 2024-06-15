@@ -79,7 +79,6 @@ internal class ScanningManager(
         didDisconnectPeripheral: CBPeripheral,
         error: NSError?
     ) {
-        println("Disconnected")
         onConnection(false)
     }
 
