@@ -1,4 +1,5 @@
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import com.dilivva.blueline.builder.buildPrintData
 import com.dilivva.blueline.connection.bluetooth.BlueLine
 import com.dilivva.blueline.connection.bluetooth.ConnectionError
 import com.dilivva.blueline.connection.bluetooth.ConnectionState
+import escposprinter.composeapp.generated.resources.Res
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -143,11 +145,11 @@ fun ConnectionItem(
     var image by remember { mutableStateOf<ImageBitmap?>(null) }
     var imageBytes by remember { mutableStateOf(byteArrayOf()) }
 
-//    LaunchedEffect(Unit){
-//        val bytes = Res.readBytes("drawable/label.png")
-//        imageBytes = bytes
-//        image = getPlatform().toImage(bytes)
-//    }
+    LaunchedEffect(Unit){
+        val bytes = Res.readBytes("drawable/label.png")
+        imageBytes = bytes
+        image = getPlatform().toImage(bytes)
+    }
 
    Box(
        modifier = Modifier.fillMaxWidth().padding(20.dp)
@@ -213,13 +215,14 @@ fun ConnectionItem(
            ){
                Button(
                    onClick = {
-                       val (data, preview) = textPrint(imageBytes)
-                       preview?.let {
-                           image = getPlatform().toImage(it)
+                       val toPrint = buildPrintData {
+                           appendImage {
+                               this.imageBytes = imageBytes
+                           }
                        }
-                       connection.print(data)
+                       connection.print(toPrint.first)
                    },
-                   enabled = connectionState.canPrint && connectionState.isConnected && !connectionState.isPrinting
+                   enabled =  connectionState.canPrint && connectionState.isConnected && !connectionState.isPrinting
                ){
                    Text("Print")
                }
@@ -228,13 +231,13 @@ fun ConnectionItem(
                }
            }
 
-//           image?.let {
-//               Image(
-//                   bitmap = it,
-//                   contentDescription = null,
-//                   modifier = Modifier.fillMaxWidth()
-//               )
-//           }
+           image?.let {
+               Image(
+                   bitmap = it,
+                   contentDescription = null,
+                   modifier = Modifier.fillMaxWidth()
+               )
+           }
        }
    }
 }
