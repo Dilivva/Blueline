@@ -29,7 +29,12 @@ BlueLine is easy to integrate into your Kotlin multiplatform project. Here's a q
    kotlin{
        sourceSets {
          commonMain.dependencies{
+            //old -  pre 2.0.0
             implementation("com.dilivva:blueline:${bluelineVersion}")
+            //New 2.2.0 Basic 
+            implementation("com.dilivva.blueline:basic-builder:${bluelineVersion}")
+            //New 2.2.0 Compose 
+            implementation("com.dilivva.blueline:compose-builder:${bluelineVersion}")
         } 
     }
    }
@@ -39,10 +44,10 @@ BlueLine is easy to integrate into your Kotlin multiplatform project. Here's a q
 
 ## Usage Example
 
-Here's a basic example demonstrating how to print some formatted text and an image:
+Here's an example demonstrating how to print some formatted text and an image using basic builder:
 
 ```kotlin
-import com.dilivva.blueline.*
+import com.dilivva.blueline.basic.*
 
 fun main() { 
     val blueLine = BlueLine()
@@ -54,7 +59,7 @@ fun main() {
     blueLine.connect()
    
     //Build print data
-    val (printData, imagePreview) = buildPrintData {
+    val result = buildPrintData {
         appendImage {
             imageBytes = bytes
         }
@@ -73,15 +78,42 @@ fun main() {
     }
     
     //print
-    blueLine.print(printData)
+    blueLine.print(result.data)
+    //preview
+    result.preview
 }
 ```
 
-This example demonstrates:
+Here's an example using compose builder:
 
-* Connecting to a printer (replace with Blueline's connection logic).
-* Printing formatted text with alignment, font, and style options.
-* Printing an image from a resource.
+```kotlin
+import com.dilivva.blueline.compose.*
+
+fun main() { 
+    val blueLine = BlueLine()
+    //Monitor Connection state
+    val connectionState = bluetoothConnection.connectionState() //StateFlow<ConnectionState>
+   val composeBuilder = rememberComposeBuilder() 
+    //Scan for printers
+    blueLine.scanForPrinters()
+    //Connect
+    blueLine.connect()
+   
+    //Use compose multiplatform to draw print data
+    composeBuilder.drawContents {
+        PreviewPeopleTable()
+    }
+   
+    //Build print data
+    val result = composeBuilder.create()
+    
+    //print
+    blueLine.print(result.data)
+    //preview
+    result.preview
+}
+```
+
 
 ## Contributing
 
@@ -90,3 +122,5 @@ We welcome contributions to Blueline!
 ## License
 
 Blueline is licensed under the MIT License. See the LICENSE file for details.
+
+
