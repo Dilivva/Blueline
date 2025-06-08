@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
@@ -31,18 +29,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dilivva.blueline.builder.Config
-import com.dilivva.blueline.builder.PrintData
-import com.dilivva.blueline.builder.buildPrintData
-import com.dilivva.blueline.connection.bluetooth.BlueLine
-import com.dilivva.blueline.connection.bluetooth.ConnectionError
-import com.dilivva.blueline.connection.bluetooth.ConnectionState
+import com.dilivva.blueline.basic.builder.buildPrintData
+import com.dilivva.blueline.compose.rememberComposeBuilder
+import com.dilivva.blueline.core.commands.Config
+import com.dilivva.blueline.core.connection.bluetooth.BlueLine
+import com.dilivva.blueline.core.connection.bluetooth.ConnectionError
+import com.dilivva.blueline.core.connection.bluetooth.ConnectionState
+import com.dilivva.blueline.core.result.PrintDataResult
 import escposprinter.composeapp.generated.resources.Res
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
@@ -57,6 +55,7 @@ fun App() {
         var message  by remember { mutableStateOf("") }
         var showDialog  by remember { mutableStateOf(false) }
         var scanCount by remember { mutableStateOf(0) }
+
 
         LaunchedEffect(Unit){
             if (!showContent) showContent = true
@@ -134,7 +133,6 @@ fun ShowDialog(
 
 
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ConnectionItem(
     connection: BlueLine,
@@ -144,11 +142,12 @@ fun ConnectionItem(
 
     var image by remember { mutableStateOf<ImageBitmap?>(null) }
     var imageBytes by remember { mutableStateOf(byteArrayOf()) }
+    val composeBuilder = rememberComposeBuilder()
 
     LaunchedEffect(Unit){
         val bytes = Res.readBytes("drawable/label.png")
         imageBytes = bytes
-        image = getPlatform().toImage(bytes)
+        //image = getPlatform().toImage(bytes)
     }
 
    Box(
@@ -156,7 +155,7 @@ fun ConnectionItem(
        .background(Color.LightGray.copy(alpha = 0.2f), RoundedCornerShape(15.dp))
        .padding(8.dp)
    ){
-       Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState(), enabled = true), verticalArrangement = Arrangement.spacedBy(15.dp)){
+       Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(15.dp)){
            Text(
                text = connectionState.deviceName,
                fontSize = 14.sp,
@@ -215,14 +214,17 @@ fun ConnectionItem(
            ){
                Button(
                    onClick = {
-                       val toPrint = buildPrintData {
-                           appendImage {
-                               this.imageBytes = imageBytes
+                       scope.launch {
+                           val printData = composeBuilder.create()
+                           printData.preview?.let {
+                               image = getPlatform().toImage(it)
                            }
+                           //connection.print(printData.data)
                        }
-                       connection.print(toPrint.first)
+
+                       //connection.print(printData.data)
                    },
-                   enabled =  connectionState.canPrint && connectionState.isConnected && !connectionState.isPrinting
+                   enabled = true//connectionState.canPrint && connectionState.isConnected && !connectionState.isPrinting
                ){
                    Text("Print")
                }
@@ -230,14 +232,18 @@ fun ConnectionItem(
                    CircularProgressIndicator()
                }
            }
-
            image?.let {
                Image(
                    bitmap = it,
                    contentDescription = null,
+                   //contentScale = ContentScale.FillWidth,
                    modifier = Modifier.fillMaxWidth()
                )
            }
+           composeBuilder.drawContents {
+               PreviewPeopleTable()
+           }
+
        }
    }
 }
@@ -248,22 +254,21 @@ fun ConnectionItem(
 
 
 
-@OptIn(ExperimentalResourceApi::class)
-private fun textPrint(bytes: ByteArray): PrintData {
+private fun textPrint(bytes: ByteArray): PrintDataResult {
     return buildPrintData {
         appendImage {
             imageBytes = bytes
         }
         appendText {
-            styledText(data = "Send24", alignment = Config.Alignment.CENTER, font = Config.Font.LARGE_2, style = Config.Style.BOLD)
+            styledText(data = "Send24", alignment = Config.Alignment.CENTER, fontSize = Config.FontSize.LARGE_2, style = Config.Style.BOLD)
             textNewLine()
             styledText(data = "================================", alignment =  Config.Alignment.CENTER, style = Config.Style.BOLD)
             textNewLine()
-            text("Name: Enoch Oyerinde")
+            text("Name: Juliette Gannon")
             textNewLine(2)
             text("Phone: 07033879645")
             textNewLine(2)
-            styledText(data = "Variant:", font = Config.Font.NORMAL, style = Config.Style.BOLD)
+            styledText(data = "Variant:", fontSize = Config.FontSize.NORMAL, style = Config.Style.BOLD)
             text("HUB_TO_HUB")
         }
     }
