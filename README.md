@@ -1,5 +1,4 @@
-![badge](https://camo.githubusercontent.com/8ce65a3be14c94be47bceb832f55e376253dde249232136976baacb38b85438c/687474703a2f2f696d672e736869656c64732e696f2f62616467652f706c6174666f726d2d616e64726f69642d3645444238442e7376673f7374796c653d666c6174)
-![badge](https://camo.githubusercontent.com/549a60a8c72c6b9ad3229b3d45dbf8cbd0f2bc9493b95463b2004b3546a36923/687474703a2f2f696d672e736869656c64732e696f2f62616467652f706c6174666f726d2d696f732d4344434443442e7376673f7374796c653d666c6174)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.1.21-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/Dilivva/Blueline)](https://github.com/Dilivva/Blueline/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/com.dilivva/blueline.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.dilivva%22%20AND%20a:%22blueline%22)
 
