@@ -51,7 +51,7 @@ android {
 }
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
-    val versionTxt = "1.0.1"
+    val versionTxt = "2.0.0"
     val isDev = findProperty("env")?.equals("dev") ?: false
     val version = if (isDev) "1.0.1-SNAPSHOT" else versionTxt
 
