@@ -31,9 +31,9 @@ BlueLine is easy to integrate into your Kotlin multiplatform project. Here's a q
          commonMain.dependencies{
             //old -  pre 2.0.0
             implementation("com.dilivva:blueline:${bluelineVersion}")
-            //New 2.2.0 Basic 
+            //New 2.0.0 Basic 
             implementation("com.dilivva.blueline:basic-builder:${bluelineVersion}")
-            //New 2.2.0 Compose 
+            //New 2.0.0 Compose 
             implementation("com.dilivva.blueline:compose-builder:${bluelineVersion}")
         } 
     }
