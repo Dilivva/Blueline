@@ -17,7 +17,7 @@ jobs:
           java-version: 21
       - name: Publish to MavenCentral
         run: >
-          ./gradlew publishAllPublicationsToMavenCentral
+          ./gradlew publishToMavenCentral
           -PmavenCentralUsername=${{ secrets.MAVEN_USERNAME }}
           -PmavenCentralPassword=${{ secrets.MAVEN_PASSWORD }}
           -PsigningInMemoryKey=${{ secrets.SIGNING_KEY }}
