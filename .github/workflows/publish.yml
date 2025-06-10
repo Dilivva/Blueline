@@ -18,6 +18,7 @@ jobs:
       - name: Publish to MavenCentral
         run: >
           ./gradlew publishToMavenCentral
+          -PVERSION_NAME=${{ github.ref_name }}
           -PmavenCentralUsername=${{ secrets.MAVEN_USERNAME }}
           -PmavenCentralPassword=${{ secrets.MAVEN_PASSWORD }}
           -PsigningInMemoryKey=${{ secrets.SIGNING_KEY }}
