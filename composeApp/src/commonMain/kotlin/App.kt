@@ -69,6 +69,8 @@ fun App() {
                 null -> ""
                 ConnectionError.BLUETOOTH_PRINT_ERROR -> "Error while printing"
                 ConnectionError.BLUETOOTH_PRINTER_DEVICE_NOT_FOUND -> "No printer found"
+                ConnectionError.BLUETOOTH_SCAN_FAILED -> "An error occured during scanning"
+                ConnectionError.BLUETOOTH_ADAPTER_ERROR -> "Bluetooth adapter has a problem"
             }
             showDialog = message.isNotEmpty()
         }
@@ -143,6 +145,7 @@ fun ConnectionItem(
     var image by remember { mutableStateOf<ImageBitmap?>(null) }
     var imageBytes by remember { mutableStateOf(byteArrayOf()) }
     val composeBuilder = rememberComposeBuilder()
+    val discoveredDevices = connectionState.discoveredDevices
 
     LaunchedEffect(Unit){
         val bytes = Res.readBytes("drawable/label.png")
@@ -155,17 +158,38 @@ fun ConnectionItem(
        .background(Color.LightGray.copy(alpha = 0.2f), RoundedCornerShape(15.dp))
        .padding(8.dp)
    ){
-       Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(15.dp)){
+       Column(modifier = Modifier.fillMaxWidth()){
            Text(
-               text = connectionState.deviceName,
+               text =
+                    "ConnectedDeviceName: ${connectionState.connectedDevice?.name}\n" +
+                    "ConnectedDeviceAddress: ${connectionState.connectedDevice?.address}\n" +
+                    "discoveredPrinter: ${connectionState.discoveredPrinter}\n" +
+                    "canPrint: ${connectionState.canPrint}\n" +
+                    "isConnected: ${connectionState.isConnected}\n" +
+                    "isBluetoothReady: ${connectionState.isBluetoothReady}\n" +
+                    "bluetoothConnectionError: ${connectionState.bluetoothConnectionError?.name}\n" +
+                    "isPrinting: ${connectionState.isPrinting}\n" +
+                    "isScanning: ${connectionState.isScanning}\n" +
+                    "isConnecting: ${connectionState.isConnecting}\n",
                fontSize = 14.sp,
-               color = Color.Red
+               color = Color.White,
            )
-           Text(
-               text = "Is connected: ${connectionState.isConnected}",
-               fontSize = 14.sp,
-               color = Color.Blue
-           )
+
+           if(discoveredDevices.isEmpty()){
+               Text(
+                   text = "No devices found",
+                   fontSize = 14.sp,
+                   color = Color.White,
+               )
+           }
+
+           discoveredDevices.forEach {
+               Text(
+                   text = "${it.value.name} - ${it.value.address}",
+                   fontSize = 14.sp,
+                   color = Color.White,
+               )
+           }
 
            Row(
                modifier = Modifier.fillMaxWidth(),
@@ -186,7 +210,8 @@ fun ConnectionItem(
 
            Button(
                onClick = {
-                   connection.connect()
+                   val firstAddress = discoveredDevices.entries.first()
+                   connection.connect(firstAddress.value.address)
                },
                enabled = !connectionState.isConnected && connectionState.discoveredPrinter
            ){

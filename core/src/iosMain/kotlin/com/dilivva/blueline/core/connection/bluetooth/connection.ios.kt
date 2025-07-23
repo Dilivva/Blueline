@@ -22,6 +22,9 @@
 
 package com.dilivva.blueline.core.connection.bluetooth
 
+import platform.CoreBluetooth.CBPeripheral
+
 
 @Suppress("unused")
 actual fun BlueLine(): BlueLine = IosBluetoothConnection
+actual typealias PlatformBluetoothDevice = CBPeripheral

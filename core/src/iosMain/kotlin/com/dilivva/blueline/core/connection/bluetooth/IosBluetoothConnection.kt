@@ -36,6 +36,7 @@ import platform.CoreBluetooth.CBCharacteristic
 import platform.CoreBluetooth.CBCharacteristicWriteWithResponse
 import platform.CoreBluetooth.CBPeripheral
 import platform.Foundation.NSData
+import platform.Foundation.NSUUID
 import platform.Foundation.create
 import kotlin.time.Duration.Companion.seconds
 
@@ -53,10 +54,16 @@ internal object IosBluetoothConnection: BlueLine {
         }
     )
 
+    private val discoveredPeripheralsForListScan = mutableMapOf<String, SimpleBluetoothDevice>()
+
     private val delegate = ScanningManager(
         onDevice = { device ->
-            peripheral = device
-            stateFlow.update { state -> state.copy(deviceName = device.name.orEmpty(), discoveredPrinter = true, isScanning = false) }
+            discoveredPeripheralsForListScan[device.identifier.UUIDString] = SimpleBluetoothDevice(
+                name = device.name ?: "Unknown device",
+                address = device.identifier.UUIDString,
+                bluetoothDevice = device,
+            )
+            stateFlow.update { state -> state.copy(discoveredDevices = discoveredPeripheralsForListScan, discoveredPrinter = true, isScanning = false) }
         },
         onConnection = {
             stateFlow.update { state -> state.copy(isConnected = it, isConnecting = false, bluetoothConnectionError = if (it) null else ConnectionError.BLUETOOTH_PRINTER_DEVICE_NOT_FOUND) }
@@ -107,8 +114,11 @@ internal object IosBluetoothConnection: BlueLine {
             centralManager.stopScan()
             stateFlow.update { it.copy(isScanning = false) }
         }
+        discoveredPeripheralsForListScan.clear()
+
         stateFlow.update { it.copy(bluetoothConnectionError = null, isScanning = true) }
         centralManager.scanForPeripheralsWithServices(serviceUUIDs = listOf(delegate.UUID), options = null)
+
         delay(5.seconds)
         if (!stateFlow.value.discoveredPrinter){
             stateFlow.update { it.copy(bluetoothConnectionError = ConnectionError.BLUETOOTH_PRINTER_DEVICE_NOT_FOUND, isScanning = false) }
@@ -120,15 +130,41 @@ internal object IosBluetoothConnection: BlueLine {
        return stateFlow.asStateFlow()
     }
 
-    override fun connect() {
-        stateFlow.update { it.copy(isConnecting = true, bluetoothConnectionError = null) }
-        val state = stateFlow.value
-        if (!state.isBluetoothReady || state.isConnected){
+    override fun connect(deviceAddress: String) {
+        if (!stateFlow.value.isBluetoothReady) {
+            stateFlow.update { it.copy(isConnecting = false, bluetoothConnectionError = ConnectionError.BLUETOOTH_DISABLED) }
             return
         }
-        peripheral?.let {
-            it.delegate = peripheralManager
-            centralManager.connectPeripheral(it, null)
+        if (stateFlow.value.isConnected && stateFlow.value.connectedDevice?.bluetoothDevice?.identifier?.UUIDString == deviceAddress) {
+            stateFlow.update{ it.copy(isConnecting = false)} // Already connected to this one
+            return
+        }
+        if (stateFlow.value.isConnecting) return // Already trying to connect
+
+        stateFlow.update { it.copy(isConnecting = true, bluetoothConnectionError = null) }
+
+        val peripheralToConnect = discoveredPeripheralsForListScan[deviceAddress]?.bluetoothDevice // Try cache from list scan
+            ?: centralManager.retrievePeripheralsWithIdentifiers(listOf(NSUUID(uUIDString = deviceAddress))).firstOrNull() as? CBPeripheral
+
+        if (peripheralToConnect == null) {
+            stateFlow.update { it.copy(isConnecting = false, bluetoothConnectionError = ConnectionError.BLUETOOTH_PRINTER_DEVICE_NOT_FOUND) }
+            return
+        }
+
+        // If the original connection is active to a DIFFERENT device, disconnect it.
+        if (this.peripheral != null && this.peripheral?.identifier != peripheralToConnect.identifier) {
+            centralManager.cancelPeripheralConnection(this.peripheral!!)
+        }
+
+        peripheralToConnect.delegate = peripheralManager
+        centralManager.connectPeripheral(peripheralToConnect, null)
+        peripheral = peripheralToConnect
+        stateFlow.update {
+            it.copy(connectedDevice = SimpleBluetoothDevice(
+                name = peripheralToConnect.name ?: "Unknown device",
+                address = peripheralToConnect.identifier.UUIDString,
+                bluetoothDevice = peripheralToConnect
+            ))
         }
     }
 
@@ -138,7 +174,7 @@ internal object IosBluetoothConnection: BlueLine {
         peripheral?.let {
             centralManager.cancelPeripheralConnection(it)
         }
-
+        stateFlow.update { it.copy(connectedDevice = null) }
     }
 
     override fun print(data: ByteArray) {
