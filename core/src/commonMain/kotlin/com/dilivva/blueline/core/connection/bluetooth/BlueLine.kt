@@ -73,8 +73,7 @@ interface BlueLine {
      * This method tries to connect to the printer that was found during the last [scanForPrinters] call.
      * It's important to ensure a successful [scanForPrinters] execution before calling [connect].
      */
-    fun connect()
-
+    fun connect(deviceAddress: String)
     /**
      * Disconnects from the currently connected Bluetooth printer.
      *

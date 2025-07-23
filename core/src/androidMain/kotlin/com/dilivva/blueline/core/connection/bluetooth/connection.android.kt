@@ -23,6 +23,9 @@
 
 package com.dilivva.blueline.core.connection.bluetooth
 
+import android.bluetooth.BluetoothDevice
+
 
 @Suppress("unused")
 actual fun BlueLine(): BlueLine = AndroidBluetoothConnection()
+actual typealias PlatformBluetoothDevice = BluetoothDevice

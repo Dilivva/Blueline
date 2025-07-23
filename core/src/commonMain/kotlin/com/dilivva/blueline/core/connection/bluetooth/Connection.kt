@@ -45,7 +45,11 @@ enum class ConnectionError {
 
     BLUETOOTH_PRINT_ERROR,
 
-    BLUETOOTH_PRINTER_DEVICE_NOT_FOUND
+    BLUETOOTH_PRINTER_DEVICE_NOT_FOUND,
+
+    BLUETOOTH_SCAN_FAILED,
+
+    BLUETOOTH_ADAPTER_ERROR
 }
 
 
@@ -56,7 +60,8 @@ enum class ConnectionError {
  * and details involved in connecting to a printer. It can be used to keep track of the
  * connection progress, communicate status to the UI, and provide context for error handling.
  *
- * @property deviceName A human-readable name representing the current device.
+ * @property connectedDevice A wrapper of the Bluetooth device that is currently connected.
+ * @property discoveredDevices A list of discovered devices during scanning process.
  * @property discoveredPrinter Indicates whether a printer has been discovered during the search process.
  * @property canPrint Indicates if the discovered printer is considered printable (might depend on additional factors like compatibility or supported features).
  * @property isConnected Indicates if a successful connection has been established with the printer.
@@ -67,7 +72,8 @@ enum class ConnectionError {
  * @property isConnecting Indicates if the system is attempting to connect to the printer
  */
 data class ConnectionState(
-    val deviceName: String = "Searching",
+    val connectedDevice: SimpleBluetoothDevice? = null,
+    val discoveredDevices: MutableMap<String, SimpleBluetoothDevice> = mutableMapOf(),
     val discoveredPrinter: Boolean = false,
     val canPrint: Boolean = false,
     val isConnected: Boolean = false,
@@ -75,5 +81,13 @@ data class ConnectionState(
     val bluetoothConnectionError: ConnectionError? = null,
     val isPrinting: Boolean = false,
     val isScanning: Boolean = false,
-    val isConnecting:Boolean = false
+    val isConnecting:Boolean = false,
 )
+
+class SimpleBluetoothDevice(
+    val name: String,
+    val address: String,
+    val bluetoothDevice: PlatformBluetoothDevice
+)
+
+expect class PlatformBluetoothDevice
