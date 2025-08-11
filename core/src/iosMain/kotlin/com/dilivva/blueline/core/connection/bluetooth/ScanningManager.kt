@@ -65,7 +65,6 @@ internal class ScanningManager(
         advertisementData: Map<Any?, *>,
         RSSI: NSNumber
     ) {
-        central.stopScan()
         onDevice(didDiscoverPeripheral)
     }
 
