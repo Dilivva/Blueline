@@ -111,7 +111,14 @@ internal class AndroidBluetoothConnection: BlueLine {
 
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                stateFlow.update { state -> state.copy(isConnected = true, isConnecting = false, bluetoothConnectionError = null) }
+                stateFlow.update {
+                    it.copy(
+                        isConnected = true,
+                        isConnecting = false,
+                        bluetoothConnectionError = null,
+                        connectedDevice = stateFlow.value.discoveredDevices[gatt!!.device.address]
+                    )
+                }
                 gatt?.discoverServices()
             }else{
                 stateFlow.update {
